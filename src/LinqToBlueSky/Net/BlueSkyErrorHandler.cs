@@ -8,6 +8,7 @@ namespace LinqToBlueSky.Net;
 
 public class BlueSkyErrorHandler
 {
+    // TODO: Need to refactor to support BlueSky error handling.
     // TODO: The versioning was specific to Twitter when they made the big change from v1 to v2. It probably doesn't apply to BlueSky.
     const int BlueSkyApiV1 = 1;
     const int BlueSkyApiV2 = 2;

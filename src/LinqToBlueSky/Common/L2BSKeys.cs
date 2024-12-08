@@ -9,7 +9,7 @@ public class L2BSKeys
     // HTTP Headers
     //
 
-    public const string DefaultUserAgent = "LINQ-To-BlueSky/6.0";
+    public const string DefaultUserAgent = "LINQ-To-BlueSky/1.0";
 
     //
     // Error handling
