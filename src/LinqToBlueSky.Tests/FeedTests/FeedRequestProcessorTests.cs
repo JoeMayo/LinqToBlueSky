@@ -88,9 +88,9 @@ public class FeedRequestProcessorTests
     [TestMethod]
     public void BuildUrl_WithLimitOver100_Throws()
     {
-        var tweetReqProc = new FeedRequestProcessor<FeedQuery> { BaseUrl = BaseUrl };
-        var parameters =
-            new Dictionary<string, string>
+        FeedRequestProcessor<FeedQuery> reqProc = new() { BaseUrl = BaseUrl };
+        Dictionary<string, string> parameters =
+            new()
             {
                     { nameof(FeedQuery.Type), FeedType.Timeline.ToString() },
                     { nameof(FeedQuery.Limit), "101" },
@@ -98,7 +98,7 @@ public class FeedRequestProcessorTests
 
         ArgumentException ex =
             L2BSkyAssert.Throws<ArgumentOutOfRangeException>(() =>
-                tweetReqProc.BuildUrl(parameters));
+                reqProc.BuildUrl(parameters));
 
         Assert.AreEqual(nameof(FeedQuery.Limit), ex.ParamName);
     }
@@ -106,9 +106,9 @@ public class FeedRequestProcessorTests
     [TestMethod]
     public void BuildUrl_WithLimitUnder1_Throws()
     {
-        var tweetReqProc = new FeedRequestProcessor<FeedQuery> { BaseUrl = BaseUrl };
-        var parameters =
-            new Dictionary<string, string>
+        FeedRequestProcessor<FeedQuery> reqProc = new() { BaseUrl = BaseUrl };
+        Dictionary<string, string> parameters =
+            new()
             {
                     { nameof(FeedQuery.Type), FeedType.Timeline.ToString() },
                     { nameof(FeedQuery.Limit), "0" },
@@ -116,7 +116,7 @@ public class FeedRequestProcessorTests
 
         ArgumentException ex =
             L2BSkyAssert.Throws<ArgumentOutOfRangeException>(() =>
-                tweetReqProc.BuildUrl(parameters));
+                reqProc.BuildUrl(parameters));
 
         Assert.AreEqual(nameof(FeedQuery.Limit), ex.ParamName);
     }
@@ -124,9 +124,9 @@ public class FeedRequestProcessorTests
     [TestMethod]
     public void ProcessResults_WithSinglePost_Populates()
     {
-        var tweetProc = new FeedRequestProcessor<FeedQuery> { BaseUrl = BaseUrl };
+        FeedRequestProcessor<FeedQuery> repProc = new() { BaseUrl = BaseUrl };
 
-        List<FeedQuery> results = tweetProc.ProcessResults(SinglePost);
+        List<FeedQuery> results = repProc.ProcessResults(SinglePost);
 
         Assert.IsNotNull(results);
         FeedQuery? feedQuery = results.SingleOrDefault();
@@ -147,9 +147,9 @@ public class FeedRequestProcessorTests
     [TestMethod]
     public void ProcessResults_ForFullTimeline_Processes()
     {
-        var tweetProc = new FeedRequestProcessor<FeedQuery> { BaseUrl = BaseUrl };
+        FeedRequestProcessor<FeedQuery> reqProc = new() { BaseUrl = BaseUrl };
 
-        List<FeedQuery> results = tweetProc.ProcessResults(TimelinePosts);
+        List<FeedQuery> results = reqProc.ProcessResults(TimelinePosts);
 
         Assert.IsNotNull(results);
         FeedQuery? feedQuery = results.SingleOrDefault();
@@ -170,21 +170,21 @@ public class FeedRequestProcessorTests
     [TestMethod]
     public void ProcessResults_Handles_Response_With_No_Results()
     {
-        var tweetProc = new FeedRequestProcessor<FeedQuery> { BaseUrl = BaseUrl };
+        FeedRequestProcessor<FeedQuery> reqProc = new() { BaseUrl = BaseUrl };
 
-        List<FeedQuery> results = tweetProc.ProcessResults(ErrorTweet);
+        List<FeedQuery> results = reqProc.ProcessResults(Error400Response);
 
-        //         Assert.IsNotNull(results);
-        //FeedQuery tweetQuery = results.SingleOrDefault();
-        //         Assert.IsNotNull(tweetQuery);
-        //         List<Post> tweets = tweetQuery.Tweets;
-        //         Assert.IsNull(tweets);
-    }
+		Assert.IsNotNull(results);
+		FeedQuery? feedQuery = results.SingleOrDefault();
+		Assert.IsNotNull(feedQuery);
+		List<FeedItem>? items = feedQuery.Feed;
+		Assert.IsNull(items);
+	}
 
     [TestMethod]
     public void ProcessResults_PopulatesInputParameters()
     {
-        var tweetProc = new FeedRequestProcessor<FeedQuery>()
+        FeedRequestProcessor<FeedQuery> reqProc = new()
         {
             BaseUrl = BaseUrl,
             Type = FeedType.Timeline,
@@ -193,54 +193,48 @@ public class FeedRequestProcessorTests
             Cursor = "456"
         };
 
-        var results = tweetProc.ProcessResults(SinglePost);
+        List<FeedQuery> results = reqProc.ProcessResults(SinglePost);
 
         Assert.IsNotNull(results);
         Assert.AreEqual(1, results.Count);
-        var feedQuery = results.Single();
+        FeedQuery feedQuery = results.Single();
         Assert.IsNotNull(feedQuery);
         Assert.AreEqual(FeedType.Timeline, feedQuery.Type);
-        //Assert.AreEqual(new DateTime(2020, 12, 31), feedQuery.EndTime);
-        //Assert.AreEqual("123", feedQuery.Algorithm);
-        //Assert.AreEqual("25", feedQuery.Limit);
-        //Assert.AreEqual("456", feedQuery.Cursor);
-    }
+		Assert.AreEqual("123", feedQuery.Algorithm);
+		Assert.AreEqual(25, feedQuery.Limit);
+		Assert.AreEqual("456", feedQuery.Cursor);
+	}
 
     [TestMethod]
     public void ProcessResults_With400Error_PopulatesErrorList()
     {
-        var tweetProc = new FeedRequestProcessor<FeedQuery> { BaseUrl = BaseUrl };
+        FeedRequestProcessor<FeedQuery> reqProc = new() { BaseUrl = BaseUrl };
 
-        List<FeedQuery> results = tweetProc.ProcessResults(ErrorTweet);
+        List<FeedQuery> results = reqProc.ProcessResults(Error400Response);
 
         Assert.IsNotNull(results);
-        FeedQuery tweetQuery = results.SingleOrDefault();
-        Assert.IsNotNull(tweetQuery);
-        //List<BlueSkyError> errors = tweetQuery.Errors;
-        //Assert.IsNotNull(errors);
-        //Assert.AreEqual(1, errors.Count);
-        //BlueSkyError error = errors.FirstOrDefault();
-        //Assert.IsNotNull(error);
-        //Assert.AreEqual("InvalidRequest", error.Error);
-        //Assert.AreEqual("bla bla bla.", error.Message);
-    }
+        FeedQuery? feedQuery = results.SingleOrDefault();
+        Assert.IsNotNull(feedQuery);
+		string error = feedQuery.Error;
+		Assert.AreEqual("InvalidRequest", error);
+        string message = feedQuery.Message;
+        Assert.AreEqual("Invalid Request.", message);
+	}
 
     [TestMethod]
     public void ProcessResults_With401Error_PopulatesErrorList()
     {
-        var tweetProc = new FeedRequestProcessor<FeedQuery> { BaseUrl = BaseUrl };
+        FeedRequestProcessor<FeedQuery> reqProc = new() { BaseUrl = BaseUrl };
 
-        List<FeedQuery> results = tweetProc.ProcessResults(ErrorTweet);
+        List<FeedQuery> results = reqProc.ProcessResults(Error401Response);
 
         Assert.IsNotNull(results);
-        FeedQuery tweetQuery = results.SingleOrDefault();
-        Assert.IsNotNull(tweetQuery);
-        //List<BlueSkyError> errors = tweetQuery.Errors;
-        //Assert.IsNotNull(errors);
-        //Assert.AreEqual(1, errors.Count);
-        //BlueSkyError error = errors.FirstOrDefault();
-        //Assert.IsNotNull(error);
-        //Assert.AreEqual("bla bla bla.", error.Message);
+        FeedQuery? feedQuery = results.SingleOrDefault();
+        Assert.IsNotNull(feedQuery);
+		string error = feedQuery.Error;
+		Assert.AreEqual("Unauthorized", error);
+        string message = feedQuery.Message;
+        Assert.AreEqual("Invalid credentials.", message);
     }
 
     const string SinglePost = @"{
@@ -8548,18 +8542,14 @@ public class FeedRequestProcessorTests
 	""cursor"": ""2024-12-08T00:47:25Z""
 }";
 
-    const string ErrorTweet = @"{
-	""errors"": [
-		{
-			""detail"": ""Could not find tweet with ids: [1]."",
-			""title"": ""Not Found Error"",
-			""resource_type"": ""tweet"",
-			""parameter"": ""ids"",
-			""value"": ""1"",
-			""type"": ""https://api.twitter.com/2/problems/resource-not-found""
-		}
-	]
+    const string Error400Response = @"{
+	""error"": ""InvalidRequest"",
+	""message"": ""Invalid Request.""
 }";
 
+    const string Error401Response = @"{
+	""error"": ""Unauthorized"",
+	""message"": ""Invalid credentials.""
+}";
 }
 

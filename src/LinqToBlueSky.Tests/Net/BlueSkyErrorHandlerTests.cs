@@ -3,6 +3,8 @@ using LinqToBlueSky.Tests.Common;
 
 namespace LinqToBlueSky.Tests.Net;
 
+// TODO: Refactor for BlueSky error handling
+
 [TestClass]
 public class BlueSkyErrorHandlerTests
 {

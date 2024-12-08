@@ -2,6 +2,8 @@
 
 namespace LinqToBlueSky.Tests.OAuth;
 
+// TODO: Refactor for BlueSky OAuth2
+
 [TestClass]
 public class OAuth2AuthorizerTests
 {
