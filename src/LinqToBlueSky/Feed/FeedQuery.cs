@@ -50,4 +50,8 @@ public record FeedQuery
     /// </summary>
     [JsonPropertyName("cursor")] // lets the response "cursor" property populate here.
     public string? NextCursor { get; init; }
+
+    public string Error { get; set; }
+
+    public string Message { get; set; }
 }

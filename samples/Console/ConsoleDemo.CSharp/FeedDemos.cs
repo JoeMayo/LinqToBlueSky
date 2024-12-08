@@ -59,20 +59,20 @@ namespace ConsoleDemo.CSharp
             // TODO: Show how to override the default limit
             // TODO: Show how to use an algorithm
 
-            FeedQuery? tweetResponse =
+            FeedQuery? feedResponse =
                 await
-                (from tweet in ctx.Feed
-                 where tweet.Type == FeedType.Timeline
-                 select tweet)
+                (from feed in ctx.Feed
+                 where feed.Type == FeedType.Timeline
+                 select feed)
                 .SingleOrDefaultAsync();
 
             Console.WriteLine("Timeline Posts");
 
-            if (tweetResponse?.Feed != null)
-                tweetResponse.Feed.ForEach(tweet =>
+            if (feedResponse?.Feed != null)
+                feedResponse.Feed.ForEach(feed =>
                     Console.WriteLine(
-                        $"\nID: {tweet.Post?.Cid ?? "missing"}" +
-                        $"\nTweet: {tweet.Post?.Record?.Text ?? "missing"}"));
+                        $"\nID: {feed.Post?.Cid ?? "missing"}" +
+                        $"\nPost: {feed.Post?.Record?.Text ?? "missing"}"));
             else
                 Console.WriteLine("No entries found.");
         }
