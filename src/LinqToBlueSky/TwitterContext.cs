@@ -1,4 +1,5 @@
 ﻿using LinqToBlueSky.Common;
+using LinqToBlueSky.Feed;
 using LinqToBlueSky.OAuth;
 using LinqToBlueSky.Provider;
 
@@ -49,10 +50,7 @@ public partial class BlueSkyContext : IDisposable
         if (string.IsNullOrWhiteSpace(UserAgent))
             UserAgent = L2BSKeys.DefaultUserAgent;
 
-        BaseUrl = "https://api.twitter.com/1.1/";
-        BaseUrl2 = "https://api.twitter.com/2/";
-        StreamingUrl = "https://stream.twitter.com/1.1/";
-        UploadUrl = "https://upload.twitter.com/1.1/";
+        BaseUrl = "https://bsky.social/";
     }
 
     /// <summary>
@@ -485,141 +483,14 @@ public partial class BlueSkyContext : IDisposable
         where T : class
     {
         string? baseUrl = BaseUrl;
-        IRequestProcessor<T> req;
 
-        // TODO: Replace processors with BlueSky API processors
-        switch (requestType)
+        IRequestProcessor<T> req = requestType switch
         {
-            //case nameof(Account):
-            //    req = new AccountRequestProcessor<T>();
-            //    break;
-            //case nameof(AccountActivity):
-            //    req = new AccountActivityRequestProcessor<T>();
-            //    break;
-            //case nameof(Blocks):
-            //    req = new BlocksRequestProcessor<T>()
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(ComplianceQuery):
-            //    req = new ComplianceRequestProcessor<T>()
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(Counts):
-            //    req = new CountsRequestProcessor<T>()
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(DirectMessageEvents):
-            //    req = new DirectMessageEventsRequestProcessor<T>();
-            //    break;
-            //case nameof(Favorites):
-            //    req = new FavoritesRequestProcessor<T>();
-            //    break;
-            //case nameof(Friendship):
-            //    req = new FriendshipRequestProcessor<T>();
-            //    break;
-            //case nameof(Geo):
-            //    req = new GeoRequestProcessor<T>();
-            //    break;
-            //case nameof(Help):
-            //    req = new HelpRequestProcessor<T>();
-            //    break;
-            //case nameof(LikeQuery):
-            //    req = new LikeRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(ListQuery):
-            //    req = new ListRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(Media):
-            //    req = new MediaRequestProcessor<T>
-            //    {
-            //        UploadUrl = UploadUrl
-            //    };
-            //    break;
-            //case nameof(Mute):
-            //    req = new MuteRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(Raw):
-            //    req = new RawRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(SavedSearch):
-            //    req = new SavedSearchRequestProcessor<T>();
-            //    break;
-            //case nameof(Search):
-            //    req = new SearchRequestProcessor<T>();
-            //    break;
-            //case nameof(TwitterSearch):
-            //    req = new TwitterSearchRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(SpacesQuery):
-            //    req = new SpacesRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(Status):
-            //    req = new StatusRequestProcessor<T>();
-            //    break;
-            //case nameof(Streaming):
-            //    baseUrl = StreamingUrl;
-            //    req = new StreamingRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2,
-            //        BlueSkyExecutor = BlueSkyExecutor
-            //    };
-            //    break;
-            //case nameof(Trend):
-            //    req = new TrendRequestProcessor<T>();
-            //    break;
-            //case nameof(TweetQuery):
-            //    req = new TweetRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(TwitterBlocksQuery):
-            //    req = new TwitterBlocksRequestProcessor<T> 
-            //    { 
-            //        BaseUrl = BaseUrl2 
-            //    };
-            //    break;
-            //case nameof(TwitterUserQuery):
-            //    req = new TwitterUserRequestProcessor<T>
-            //    {
-            //        BaseUrl = BaseUrl2
-            //    };
-            //    break;
-            //case nameof(User):
-            //    req = new UserRequestProcessor<T>();
-            //    break;
-            //case nameof(WelcomeMessage):
-            //    req = new WelcomeMessageRequestProcessor<T>();
-            //    break;
-            default:
-                throw new ArgumentException($"Type, {requestType} isn't a supported LINQ to Twitter entity.", nameof(requestType));
-        }
+            nameof(FeedQuery) => new FeedRequestProcessor<T>(),
+            _ => throw new ArgumentException($"Type, {requestType} isn't a supported BlueSky entity.", nameof(requestType))
+        };
 
-        if (req.BaseUrl == null)
+        if (req.BaseUrl is null)
             req.BaseUrl = baseUrl;
 
         return req;

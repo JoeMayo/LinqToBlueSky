@@ -6,4 +6,5 @@ public class PostImage
     public Aspectratio? AspectRatio { get; set; }
     public string? Fullsize { get; set; }
     public ImageMeta? Image { get; set; }
+    public string? Thumb { get; set; }
 }

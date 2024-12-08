@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToBlueSky", "LinqToBlue
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToBlueSky.Tests", "LinqToBlueSky.Tests\LinqToBlueSky.Tests.csproj", "{5FB5A8D2-2BDF-45CC-A856-E681FA4CB409}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleDemo.CSharp", "..\samples\Console\ConsoleDemo.CSharp\ConsoleDemo.CSharp.csproj", "{3F73EF87-B82E-4A3C-B10C-444D1884F2C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5FB5A8D2-2BDF-45CC-A856-E681FA4CB409}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FB5A8D2-2BDF-45CC-A856-E681FA4CB409}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FB5A8D2-2BDF-45CC-A856-E681FA4CB409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F73EF87-B82E-4A3C-B10C-444D1884F2C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F73EF87-B82E-4A3C-B10C-444D1884F2C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F73EF87-B82E-4A3C-B10C-444D1884F2C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F73EF87-B82E-4A3C-B10C-444D1884F2C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,15 +1,8 @@
-﻿using LinqToBlueSky.Common;
-using LinqToBlueSky.Provider;
+﻿using LinqToBlueSky.Provider;
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.Json;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace LinqToBlueSky.Feed;
 
@@ -105,15 +98,14 @@ public class FeedRequestProcessor<T> : IRequestProcessor<T>, IRequestProcessorWa
             Algorithm = parameters[nameof(Algorithm)];
             urlParams.Add(new QueryParameter("algorithm", Algorithm));
         }
-        else
-        {
-            throw new ArgumentException($"{nameof(Algorithm)} is required", nameof(Algorithm));
-        }
 
         if (parameters.ContainsKey(nameof(Limit)))
         {
             Limit = int.Parse(parameters[nameof(Limit)]);
             urlParams.Add(new QueryParameter("limit", Limit.ToString()));
+
+            if (Limit < 1 || Limit > 100)
+                throw new ArgumentOutOfRangeException(nameof(Limit), "Limit must be between 1 and 100.");
         }
         
         if (parameters.ContainsKey(nameof(Cursor)))
@@ -149,7 +141,7 @@ public class FeedRequestProcessor<T> : IRequestProcessor<T>, IRequestProcessorWa
 
     FeedQuery JsonDeserialize(string responseJson)
     {
-        var options = new JsonSerializerOptions
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
             Converters =
             {
