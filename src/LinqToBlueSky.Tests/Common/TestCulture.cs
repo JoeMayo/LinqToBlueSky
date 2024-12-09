@@ -7,7 +7,7 @@ public class TestCulture
     public static void SetCulture()
     {
         string culture = string.Empty;
-        var cultureInfo = new CultureInfo(culture);
+        CultureInfo cultureInfo = new(culture);
         CultureInfo.CurrentCulture = cultureInfo;
     }
 }

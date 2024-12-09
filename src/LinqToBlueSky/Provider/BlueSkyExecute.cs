@@ -133,13 +133,9 @@ internal partial class BlueSkyExecute : IBlueSkyExecute, IDisposable
 
     internal void SetAuthorizationHeader(string method, string url, IDictionary<string, string> parms, HttpRequestMessage req)
     {
-        _ = Authorizer ?? throw new ArgumentNullException(nameof(Authorizer), $"{nameof(Authorizer)} is required.");
+        ArgumentNullException.ThrowIfNull(Authorizer, $"{nameof(Authorizer)} is required.");
 
-        var authStringParms = parms.ToDictionary(parm => parm.Key, elm => elm.Value);
-        authStringParms.Add("oauth_consumer_key", Authorizer.CredentialStore?.ConsumerKey ?? string.Empty);
-        authStringParms.Add("oauth_token", Authorizer.CredentialStore?.OAuthToken ?? string.Empty);
-
-        string? authorizationString = Authorizer.GetAuthorizationString(method, url, authStringParms);
+        string? authorizationString = Authorizer.GetAuthorizationString(method, url, parms);
 
         req.Headers.Add("Authorization", authorizationString);
     }
@@ -284,6 +280,38 @@ internal partial class BlueSkyExecute : IBlueSkyExecute, IDisposable
 
         if (StreamingClient != null)
             StreamingClient.CancelPendingRequests();
+    }
+
+    /// <summary>
+    /// Performs HTTP POST to BlueSky
+    /// </summary>
+    /// <typeparam name="TResponse">Type to convert BlueSky JSON response into.</typeparam>
+    /// <param name="content">Anonymous type representing JSON message structure. This is so that we can only add fields relevant to the query. BlueSky validates all fields present, which causes errors on required fields of objects we didn't need/provide with this query.</param>
+    /// <param name="parms"></param> // TODO: Not sure if we need this - might be relic from Twitter
+    /// <param name="url">URL to post to.</param>
+    /// <param name="cancelToken"><see cref="CancellationToken"/></param>
+    /// <returns>Instance of TResponse.</returns>
+    public async Task<TResponse> PostAsync<TResponse>(object content, Dictionary<string, string> parms, string url, CancellationToken cancelToken)
+        where TResponse : class, new()
+    {
+        HttpClient client = new(new PostMessageHandler(this, parms, url));
+
+        HttpResponseMessage httpResponse = 
+            await client
+                .PostAsync(
+                    url,
+                    new StringContent(
+                        JsonSerializer.Serialize(
+                            content,
+                            new JsonSerializerOptions(JsonSerializerDefaults.Web)),
+                        Encoding.UTF8,
+                        "application/json"),
+                    cancelToken)
+                .ConfigureAwait(false);
+
+        string responseJson = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<TResponse>(responseJson, new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? new();
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using LinqToBlueSky;
 using LinqToBlueSky.Common;
@@ -79,36 +80,35 @@ namespace ConsoleDemo.CSharp
 
         static async Task PostAsync(BlueSkyContext ctx)
         {
-            //Console.Write("Enter text to tweet: ");
-            //string? status = Console.ReadLine() ?? "";
+            Console.Write("Enter text to post: ");
+            string? text = Console.ReadLine() ?? string.Empty;
 
-            //Console.WriteLine("\nHere's what you typed: \n\n\"{0}\"", status);
-            //Console.Write("\nDo you want to send this tweet? (y or n): ");
-            //string? confirm = Console.ReadLine();
+            Console.WriteLine("\nHere's what you typed: \n\n\"{0}\"", text);
+            Console.Write("\nDo you want to send this post? (y or n): ");
+            string? confirm = Console.ReadLine();
 
-            //if (confirm?.ToUpper() == "N")
-            //{
-            //    Console.WriteLine("\nThis tweet is *not* being sent.");
-            //}
-            //else if (confirm?.ToUpper() == "Y")
-            //{
-            //    Console.WriteLine("\nPress any key to post tweet...\n");
-            //    Console.ReadKey(true);
+            if (confirm?.ToUpper() == "N")
+            {
+                Console.WriteLine("\nThis post is *not* being sent.");
+            }
+            else if (confirm?.ToUpper() == "Y")
+            {
+                Console.WriteLine("\nPress any key to send post...\n");
+                Console.ReadKey(true);
 
-            //    Tweet? tweet = await ctx.TweetAsync(status);
+                PostResponse? response = await ctx.PostAsync(text);
 
-            //    if (tweet != null)
-            //        Console.WriteLine(
-            //            "Tweet returned: " +
-            //            "(" + tweet.ID + ") " +
-            //            tweet.Text + "\n");
-            //}
-            //else
-            //{
-            //    Console.WriteLine(
-            //        $"Sorry, you typed '{confirm}', " +
-            //        $"but I only recognize 'Y' or 'N'.");
-            //}
+                string responseJson = JsonSerializer.Serialize(response, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+                if (response != null)
+                    Console.WriteLine($"Response:\n {responseJson}");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"Sorry, you typed '{confirm}', " +
+                    $"but I only recognize 'Y' or 'N'.");
+            }
         }
     }
 }
