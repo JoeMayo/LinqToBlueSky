@@ -22,8 +22,8 @@ public class FeedRequestProcessorTests
     {
         FeedRequestProcessor<FeedQuery> reqProc = new();
 
-        var endTime = new DateTime(2020, 8, 30);
-        var startTime = new DateTime(2020, 8, 1);
+        DateTime endTime = new(2020, 8, 30);
+        DateTime startTime = new(2020, 8, 1);
         Expression<Func<FeedQuery, bool>> expression =
             feed =>
                 feed.Type == FeedType.Timeline &&
@@ -31,7 +31,7 @@ public class FeedRequestProcessorTests
                 feed.Limit == 25 &&
                 feed.Cursor == "456";
 
-        var lambdaExpression = expression as LambdaExpression;
+        LambdaExpression lambdaExpression = expression as LambdaExpression;
 
         Dictionary<string, string> queryParams = reqProc.GetParameters(lambdaExpression);
 
@@ -79,9 +79,7 @@ public class FeedRequestProcessorTests
 
         L2BSkyAssert.Throws<NullReferenceException>(() =>
         {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            reqProc.BuildUrl(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            reqProc.BuildUrl(null!);
         });
     }
 

@@ -34,7 +34,7 @@ public class OAuth2AuthorizerTests
     {
         string codeChallenge = auth.GenerateCodeChallenge();
 
-        foreach (var ch in codeChallenge)
+        foreach (char ch in codeChallenge)
             Assert.IsTrue(OAuth2Authorizer.ValidCharacters.Contains(ch));
     }
 

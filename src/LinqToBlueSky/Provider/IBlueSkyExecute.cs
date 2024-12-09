@@ -131,4 +131,16 @@ public interface IBlueSkyExecute
     /// Closes the stream
     /// </summary>
     void CloseStream();
+
+    /// <summary>
+    /// Performs HTTP POST to BlueSky
+    /// </summary>
+    /// <typeparam name="TResponse">Type to convert BlueSky JSON response into.</typeparam>
+    /// <param name="content">Anonymous type representing JSON message structure. This is so that we can only add fields relevant to the query. BlueSky validates all fields present, which causes errors on required fields of objects we didn't need/provide with this query.</param>
+    /// <param name="parms"></param> // TODO: Not sure if we need this - might be relic from Twitter
+    /// <param name="url">URL to post to.</param>
+    /// <param name="cancelToken"><see cref="CancellationToken"/></param>
+    /// <returns>Instance of TResponse.</returns>
+    Task<TResponse> PostAsync<TResponse>(object content, Dictionary<string, string> parms, string url, CancellationToken cancelToken)
+        where TResponse : class, new();
 }
